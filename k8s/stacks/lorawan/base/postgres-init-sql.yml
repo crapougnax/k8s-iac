@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-sql
+  namespace: lorawan
+data:
+  01-init-timeseries.sql: |
+    -- Enable required extensions for ChirpStack v4
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+    CREATE EXTENSION IF NOT EXISTS "hstore";
+
+    -- Create dedicated read-only role for Brad
+    DO $$
+    BEGIN
+      IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'brad_ro') THEN
+        CREATE ROLE brad_ro WITH LOGIN PASSWORD 'change-me-in-production';
+      END IF;
+    END
+    $$;
+
+    -- Grant read-only access to ChirpStack device event tables
+    GRANT CONNECT ON DATABASE chirpstack TO brad_ro;
+    GRANT USAGE ON SCHEMA public TO brad_ro;
+    GRANT SELECT ON ALL TABLES IN SCHEMA public TO brad_ro;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO brad_ro;

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+  namespace: traefik
+  annotations:
+    service.beta.kubernetes.io/scw-loadbalancer-zone: "fr-par-1"
+    service.beta.kubernetes.io/scw-loadbalancer-type: "LB-S"
+    service.beta.kubernetes.io/scw-loadbalancer-use-existing-ip: "5ff0ac48-512f-4dbb-9857-a2e7de17fc8a"
+    service.beta.kubernetes.io/scw-loadbalancer-proxy-protocol-v2: "false"
+    service.beta.kubernetes.io/scw-loadbalancer-health-check-type: "tcp"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: "163.172.164.2"
+  selector:
+    app.kubernetes.io/name: traefik
+  ports:
+    - name: web
+      port: 80
+      targetPort: web
+    - name: websecure
+      port: 443
+      targetPort: websecure

@@ -1,0 +1,19 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: scaleway-sbs-5k
+provisioner: csi.scaleway.com
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  type: sbs_5k
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: scaleway-sbs-15k
+provisioner: csi.scaleway.com
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  type: sbs_15k

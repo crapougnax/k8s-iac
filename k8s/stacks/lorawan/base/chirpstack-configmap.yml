@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chirpstack-config
+  namespace: lorawan
+data:
+  chirpstack.toml: |
+    [logging]
+    level="info"
+
+    [postgresql]
+    dsn="postgres://chirpstack:chirpstack@postgres:5432/chirpstack?sslmode=disable"
+    max_open_connections=10
+
+    [redis]
+    servers=["redis://redis:6379/0"]
+
+    [network]
+    net_id="000000"
+    enabled_regions=["eu868"]
+
+    [api]
+    bind="0.0.0.0:8080"
+    secret="replace-with-jwt-secret-in-production"
+
+    # DUAL INTEGRATION PIPELINE: MQTT (Live Stream) + PostgreSQL (Timeseries Store)
+    [integration]
+    enabled=["mqtt", "postgresql"]
+
+    [integration.mqtt]
+    server="tcp://mosquitto:1883"
+    json=true
+
+    [integration.postgresql]
+    dsn="postgres://chirpstack:chirpstack@postgres:5432/chirpstack?sslmode=disable"
+    max_open_connections=10

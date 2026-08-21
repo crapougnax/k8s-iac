@@ -1,0 +1,34 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+*.tfvars
+!*.tfvars.dist
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Environment & Secrets
+.env
+.env.*
+!.env.dist
+secrets/
+*.pem
+*.key
+*.crt
+
+# Node & Bun
+node_modules/
+bun.lockb
+package-lock.json
+yarn.lock
+
+# OS Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db

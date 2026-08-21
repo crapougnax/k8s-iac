@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reloader
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reloader
+  template:
+    metadata:
+      labels:
+        app: reloader
+    spec:
+      containers:
+        - name: reloader
+          image: ghcr.io/stakater/reloader:v1.0.114
+          args: ["--auto-reload-all=true"]
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack
+  namespace: lorawan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack
+  template:
+    metadata:
+      labels:
+        app: chirpstack
+    spec:
+      containers:
+        - name: chirpstack
+          image: docker.io/chirpstack/chirpstack:4.9.0
+          args: ["-c", "/etc/chirpstack"]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/chirpstack
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+        - name: config
+          configMap:
+            name: chirpstack-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chirpstack
+  namespace: lorawan
+spec:
+  selector:
+    app: chirpstack
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

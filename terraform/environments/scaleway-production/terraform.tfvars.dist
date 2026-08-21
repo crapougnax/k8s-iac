@@ -1,0 +1,13 @@
+# ==============================================================================
+# Tycho Kubernetes IaC — Scaleway Production Configuration Template
+# Copy this file to terraform.tfvars and fill in your values
+# ==============================================================================
+
+scaleway_organization_id = "00000000-0000-0000-0000-000000000000"
+scaleway_project_id      = "00000000-0000-0000-0000-000000000000"
+scaleway_region          = "fr-par"
+scaleway_zone            = "fr-par-1"
+
+# DNS Management via Scaleway Domains
+enable_scaleway_dns      = true
+dns_zone                 = "example.com"

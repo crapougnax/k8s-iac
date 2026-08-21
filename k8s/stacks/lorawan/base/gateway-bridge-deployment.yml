@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-bridge
+  namespace: lorawan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-bridge
+  template:
+    metadata:
+      labels:
+        app: gateway-bridge
+    spec:
+      containers:
+        - name: gateway-bridge
+          image: docker.io/chirpstack/chirpstack-gateway-bridge:4.0.11
+          args: ["-c", "/etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml"]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/chirpstack-gateway-bridge
+          ports:
+            - name: station-ws
+              containerPort: 3001
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: config
+          configMap:
+            name: gateway-bridge-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-bridge
+  namespace: lorawan
+spec:
+  selector:
+    app: gateway-bridge
+  ports:
+    - name: station-ws
+      port: 3001
+      targetPort: 3001

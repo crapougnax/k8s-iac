@@ -1,0 +1,2 @@
+scaleway_project_id = "YOUR_SCALEWAY_STAGING_PROJECT_ID"
+dns_zone            = "staging.brad.farm"

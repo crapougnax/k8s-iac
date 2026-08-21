@@ -1,0 +1,20 @@
+{
+  "name": "@tycho/k8s-iac",
+  "version": "1.0.0",
+  "description": "Production-grade, multi-cloud Kubernetes Infrastructure as Code (IaC) & GitOps recipes by Tycho",
+  "license": "AGPL-3.0-or-later",
+  "homepage": "https://github.com/tycho-ops/k8s-iac",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tycho-ops/k8s-iac.git"
+  },
+  "scripts": {
+    "bootstrap:tls": "./bin/bootstrap-cluster-ingress-tls.sh",
+    "cert:issue": "./bin/issue-certificate.sh",
+    "deploy:lorawan": "./bin/deploy-lorawan.sh",
+    "undeploy:lorawan": "./bin/undeploy-lorawan.sh",
+    "tf:fmt": "terraform fmt -recursive terraform/",
+    "tf:validate": "cd terraform/environments/scaleway-production && terraform init -backend=false && terraform validate",
+    "k8s:lint": "kubectl kustomize k8s/argocd > /dev/null && kubectl kustomize k8s/stacks/lorawan/base > /dev/null && kubectl kustomize k8s/traefik/base > /dev/null"
+  }
+}

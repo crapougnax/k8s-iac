@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: lorawan-tls-cert
+  namespace: lorawan
+spec:
+  secretName: lorawan-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: eu1.lorawan.qtrn.io
+  dnsNames:
+    - eu1.lorawan.qtrn.io

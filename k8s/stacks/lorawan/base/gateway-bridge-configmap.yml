@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-bridge-config
+  namespace: lorawan
+data:
+  chirpstack-gateway-bridge.toml: |
+    [general]
+    log_level=4
+
+    # LoRa Basics Station (LNS Protocol over WebSocket WSS)
+    [backend]
+    type="basic_station"
+
+    [backend.basic_station]
+    bind="0.0.0.0:3001"
+    region="EU868"
+    stats_interval="30s"
+    ping_interval="1m"
+    read_timeout="1m5s"
+    write_timeout="1m"
+
+    [integration.mqtt]
+    event_topic_template="eu868/gateway/{{ .GatewayID }}/event/{{ .EventType }}"
+    state_topic_template="eu868/gateway/{{ .GatewayID }}/state/{{ .StateType }}"
+    command_topic_template="eu868/gateway/{{ .GatewayID }}/command/{{ .CommandType }}"
+    server="tcp://mosquitto:1883"
