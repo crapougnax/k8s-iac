@@ -3,5 +3,5 @@ output "volumes" {
     id         = v.id
     name       = v.name
     size_in_gb = v.size_in_gb
-  }}
+  } }
 }

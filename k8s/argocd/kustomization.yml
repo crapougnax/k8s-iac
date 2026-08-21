@@ -7,7 +7,6 @@ resources:
   - argocd-ingressroute.yml
   - lorawan-applicationset.yml
 patches:
-  - path: argocd-image-updater-config.yml
   - target:
       kind: ConfigMap
       name: argocd-cmd-params-cm
@@ -18,3 +17,20 @@ patches:
         name: argocd-cmd-params-cm
       data:
         server.insecure: "true"
+  - target:
+      kind: ConfigMap
+      name: argocd-image-updater-config
+    patch: |-
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: argocd-image-updater-config
+      data:
+        registries.conf: |
+          registries:
+            - name: GitHub Container Registry
+              api_url: https://ghcr.io
+              prefix: ghcr.io
+              ping: yes
+              insecure: no
+              credentials: secret:argocd/ghcr-creds#token

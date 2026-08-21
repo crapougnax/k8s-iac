@@ -16,7 +16,7 @@ provider "scaleway" {
 }
 
 module "network" {
-  source = "../../modules/scaleway/network"
+  source               = "../../modules/scaleway/network"
   project_id           = var.scaleway_project_id
   vpc_name             = "eu1-paris-vpc"
   private_network_name = "eu1-paris-pn"
@@ -26,7 +26,7 @@ module "network" {
 }
 
 module "kapsule" {
-  source = "../../modules/scaleway/kapsule-cluster"
+  source             = "../../modules/scaleway/kapsule-cluster"
   project_id         = var.scaleway_project_id
   cluster_name       = "eu1.paris.qtrn.io"
   k8s_version        = "1.34.6"
@@ -39,7 +39,7 @@ module "kapsule" {
 }
 
 module "dns" {
-  source = "../../modules/scaleway/dns"
+  source         = "../../modules/scaleway/dns"
   enabled        = var.enable_scaleway_dns
   enable_aaaa    = false # Keep IPv4 only during Let's Encrypt validation
   project_id     = var.scaleway_project_id
