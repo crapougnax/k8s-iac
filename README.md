@@ -16,27 +16,36 @@ Designed for high availability, zero-friction automated Let's Encrypt TLS issuan
 ## 🏗️ Architecture & Philosophy
 
 ```mermaid
-graph TD
-    subgraph "Layer 1: Multi-Cloud IaC (Terraform)"
-        TF[Terraform CLI / CI] --> VPC[VPC & Isolated Private Network]
-        TF --> K8s[Managed K8s Cluster (ARM64 / AMD64)]
-        TF --> LB[Dual-Stack Load Balancer (IPv4 + IPv6)]
-        TF --> DNS[Declarative DNS Management]
-        TF --> Storage[Cloud Block Storage CSI]
+flowchart TD
+    subgraph L1 ["Layer 1: Multi-Cloud Infrastructure (Terraform)"]
+        TF["Terraform CLI / CI"] --> VPC["VPC & Isolated Private Network"]
+        TF --> K8s["Managed K8s Cluster (ARM64 / AMD64)"]
+        TF --> LB["Dual-Stack Load Balancer (IPv4 + IPv6)"]
+        TF --> DNS["Declarative DNS Management"]
+        TF --> Storage["Cloud Block Storage CSI"]
     end
 
-    subgraph "Layer 2: Core Cluster Ingress & GitOps"
-        K8s --> ArgoCD[ArgoCD GitOps Engine]
-        K8s --> Traefik[Traefik Ingress v3 + Dashboard]
-        K8s --> CertManager[Cert-Manager: Automated Let's Encrypt TLS]
-        K8s --> Reloader[Stakater Reloader]
+    subgraph L2 ["Layer 2: Core Cluster Ingress & GitOps"]
+        ArgoCD["ArgoCD GitOps Engine"]
+        Traefik["Traefik Ingress v3 + Dashboard"]
+        CertManager["Cert-Manager (Automated Let's Encrypt TLS)"]
+        Reloader["Stakater Reloader"]
     end
 
-    subgraph "Layer 3: Modular Application Stacks (Options)"
-        ArgoCD --> StackLora[LoRaWAN ChirpStack v4 Stack]
-        ArgoCD --> StackStudio[Modaka Studio Engine]
-        ArgoCD --> StackObs[Observability / Prometheus]
+    subgraph L3 ["Layer 3: Modular Application Stacks (Options)"]
+        StackLora["LoRaWAN ChirpStack v4 Stack"]
+        StackStudio["Modaka Studio Engine"]
+        StackObs["Observability & Metrics"]
     end
+
+    K8s --> ArgoCD
+    K8s --> Traefik
+    K8s --> CertManager
+    K8s --> Reloader
+
+    ArgoCD --> StackLora
+    ArgoCD --> StackStudio
+    ArgoCD --> StackObs
 ```
 
 ---
