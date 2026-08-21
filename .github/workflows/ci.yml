@@ -1,0 +1,36 @@
+name: CI Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Lint & Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive terraform/
+
+      - name: Kustomize Validation
+        run: |
+          kubectl kustomize k8s/argocd > /dev/null
+          kubectl kustomize k8s/cert-manager/base > /dev/null
+          kubectl kustomize k8s/common > /dev/null
+          kubectl kustomize k8s/traefik/base > /dev/null
+          kubectl kustomize k8s/stacks/lorawan/base > /dev/null
