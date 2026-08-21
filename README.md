@@ -53,7 +53,7 @@ flowchart TD
 ## ✨ Key Capabilities
 
 - 🚀 **1-Click Cluster Ingress & TLS Bootstrap**: Provision Traefik v3, native IngressClass, Cert-Manager v1.16, ClusterIssuer HTTP-01, and production certificates in a single non-blocking command.
-- 🔒 **1-Command SSL Certificate Issuer**: Seamlessly generate valid Let's Encrypt certificates for any subdomain with `./bin/issue-certificate.sh`.
+- 🔒 **1-Command SSL Certificate Issuer**: Seamlessly generate valid Let's Encrypt certificates for any subdomain with `tycho k8s cert`.
 - 🌐 **Cloud-Agnostic Modules**: Reusable Terraform modules for Scaleway (Kapsule ARM64, SBS Block Storage, Flexible IPs) and extensible to Hetzner, AWS, and bare-metal.
 - 🧩 **Modular Workload Stacks**: Enable or disable application suites (such as LoRaWAN ChirpStack v4 with PostgreSQL 16 persistence, Redis 7, Mosquitto MQTT, and LoRa Basics™ Station WSS) on demand.
 - 🐙 **GitOps Driven (ArgoCD)**: Declarative drift detection, auto-healing, and App-of-Apps management pattern.
@@ -79,14 +79,14 @@ kubectl get nodes -o wide
 
 ### 3. Bootstrap Ingress, Traefik & TLS
 ```bash
-bun run bootstrap:tls
-# or ./bin/bootstrap-cluster-ingress-tls.sh
+tycho k8s bootstrap
+# or ./bin/tycho-k8s bootstrap
 ```
 
 ### 4. Deploy Optional Workload Stacks (LoRaWAN Example)
 ```bash
-bun run deploy:lorawan
-# or ./bin/deploy-lorawan.sh
+tycho k8s deploy lorawan
+# or ./bin/tycho-k8s deploy lorawan
 ```
 
 ---

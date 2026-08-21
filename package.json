@@ -9,12 +9,13 @@
     "url": "https://github.com/tycho-ops/k8s-iac.git"
   },
   "scripts": {
-    "bootstrap:tls": "./bin/bootstrap-cluster-ingress-tls.sh",
-    "cert:issue": "./bin/issue-certificate.sh",
-    "deploy:lorawan": "./bin/deploy-lorawan.sh",
-    "undeploy:lorawan": "./bin/undeploy-lorawan.sh",
+    "bootstrap:tls": "./bin/tycho-k8s bootstrap",
+    "cert:issue": "./bin/tycho-k8s cert",
+    "deploy:lorawan": "./bin/tycho-k8s deploy lorawan",
+    "undeploy:lorawan": "./bin/tycho-k8s undeploy lorawan",
     "tf:fmt": "terraform fmt -recursive terraform/",
     "tf:validate": "cd terraform/environments/scaleway-production && terraform init -backend=false && terraform validate",
-    "k8s:lint": "kubectl kustomize k8s/argocd > /dev/null && kubectl kustomize k8s/stacks/lorawan/base > /dev/null && kubectl kustomize k8s/traefik/base > /dev/null"
+    "k8s:lint": "kubectl kustomize k8s/argocd > /dev/null && kubectl kustomize k8s/stacks/lorawan/base > /dev/null && kubectl kustomize k8s/traefik/base > /dev/null",
+    "status": "./bin/tycho-k8s status"
   }
 }

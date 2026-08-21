@@ -67,9 +67,8 @@ kubectl get nodes -o wide
 To install Traefik v3, Cert-Manager v1.16, native IngressClass, ClusterIssuer, and issue the initial production SSL certificates seamlessly:
 
 ```bash
-bun run bootstrap:tls
-# or directly:
-./bin/bootstrap-cluster-ingress-tls.sh
+tycho k8s bootstrap
+# or ./bin/tycho-k8s bootstrap
 ```
 
 ---
@@ -104,12 +103,12 @@ Includes ChirpStack v4, LoRa Basics™ Station WSS gateway bridge, Eclipse Mosqu
 
 ```bash
 # Deploy:
-bun run deploy:lorawan
-# or ./bin/deploy-lorawan.sh
+tycho k8s deploy lorawan
+# or ./bin/tycho-k8s deploy lorawan
 
 # Undeploy:
-bun run undeploy:lorawan
-# or ./bin/undeploy-lorawan.sh
+tycho k8s undeploy lorawan
+# or ./bin/tycho-k8s undeploy lorawan
 ```
 
 ---
@@ -119,14 +118,14 @@ bun run undeploy:lorawan
 To issue a valid Let's Encrypt production SSL certificate for any new domain or subdomain in 1 command:
 
 ```bash
-./bin/issue-certificate.sh <domain> <namespace> [secret_name]
+tycho k8s cert <domain> <namespace> [secret_name]
 ```
 
 **Examples:**
 ```bash
-./bin/issue-certificate.sh argocd.example.com argocd argocd-server-tls
-./bin/issue-certificate.sh eu1.lorawan.example.com lorawan lorawan-tls
-./bin/issue-certificate.sh api.example.com default api-tls
+tycho k8s cert argocd.example.com argocd argocd-server-tls
+tycho k8s cert eu1.lorawan.example.com lorawan lorawan-tls
+tycho k8s cert api.example.com default api-tls
 ```
 
 ---

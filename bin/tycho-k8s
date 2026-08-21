@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ==============================================================================
+# Tycho Kubernetes Management CLI (tycho k8s)
+# Brand: Tycho (https://github.com/tycho-ops)
+# ==============================================================================
+
+GREEN="\033[0;32m"
+BLUE="\033[0;34m"
+YELLOW="\033[1;33m"
+RED="\033[0;31m"
+BOLD="\033[1m"
+NC="\033[0m"
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+log_info() { echo -e "${BLUE}[tycho k8s]${NC} $1"; }
+log_success() { echo -e "${GREEN}[tycho k8s]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[tycho k8s]${NC} $1"; }
+log_error() { echo -e "${RED}[tycho k8s error]${NC} $1"; exit 1; }
+
+usage() {
+    echo -e "${BOLD}Tycho Kubernetes CLI (tycho k8s)${NC}"
+    echo ""
+    echo "Usage: tycho k8s <command> [arguments]"
+    echo ""
+    echo "Commands:"
+    echo "  bootstrap                    Bootstrap Traefik v3 Ingress, Cert-Manager & Let's Encrypt TLS"
+    echo "  cert <domain> [ns] [secret]  Issue a Let's Encrypt production SSL certificate"
+    echo "  deploy <stack>               Deploy an optional workload stack (e.g. lorawan, studio, monitoring)"
+    echo "  undeploy <stack>             Cleanly remove an optional workload stack from cluster"
+    echo "  status                       Audit cluster nodes, namespaces, certificates and pods"
+    echo "  tf <init|plan|apply|fmt>     Orchestrate Terraform multi-cloud infrastructure"
+    echo ""
+    echo "Examples:"
+    echo "  tycho k8s bootstrap"
+    echo "  tycho k8s cert api.example.com default api-tls"
+    echo "  tycho k8s deploy lorawan"
+    echo "  tycho k8s status"
+    echo ""
+}
+
+CMD="${1:-help}"
+
+case "$CMD" in
+    bootstrap|boot)
+        "${REPO_ROOT}/bin/bootstrap-cluster-ingress-tls.sh"
+        ;;
+    cert|certificate)
+        shift
+        if [ "$#" -lt 1 ]; then
+            log_error "Missing required domain argument. Usage: tycho k8s cert <domain> [namespace] [secret_name]"
+        fi
+        "${REPO_ROOT}/bin/issue-certificate.sh" "$@"
+        ;;
+    deploy|up)
+        shift
+        STACK="${1:-}"
+        if [ -z "$STACK" ]; then
+            log_error "Missing stack name. Usage: tycho k8s deploy <stack> (e.g. lorawan)"
+        fi
+        if [ -f "${REPO_ROOT}/bin/deploy-${STACK}.sh" ]; then
+            "${REPO_ROOT}/bin/deploy-${STACK}.sh"
+        elif [ -d "${REPO_ROOT}/k8s/stacks/${STACK}/base" ]; then
+            log_info "Deploying stack '${STACK}' via Kustomize..."
+            kubectl apply -k "${REPO_ROOT}/k8s/stacks/${STACK}/base"
+            log_success "Stack '${STACK}' applied!"
+        else
+            log_error "Unknown stack '${STACK}'. Directory '${REPO_ROOT}/k8s/stacks/${STACK}/base' not found."
+        fi
+        ;;
+    undeploy|down)
+        shift
+        STACK="${1:-}"
+        if [ -z "$STACK" ]; then
+            log_error "Missing stack name. Usage: tycho k8s undeploy <stack> (e.g. lorawan)"
+        fi
+        if [ -f "${REPO_ROOT}/bin/undeploy-${STACK}.sh" ]; then
+            "${REPO_ROOT}/bin/undeploy-${STACK}.sh"
+        elif [ -d "${REPO_ROOT}/k8s/stacks/${STACK}/base" ]; then
+            log_warn "Undeploying stack '${STACK}'..."
+            kubectl delete -k "${REPO_ROOT}/k8s/stacks/${STACK}/base" --ignore-not-found=true
+            log_success "Stack '${STACK}' removed."
+        else
+            log_error "Unknown stack '${STACK}'."
+        fi
+        ;;
+    status|ps)
+        echo -e "${BOLD}=== Kubernetes Cluster Nodes ===${NC}"
+        kubectl get nodes -o wide
+        echo ""
+        echo -e "${BOLD}=== Active Let's Encrypt SSL Certificates ===${NC}"
+        kubectl get cert -A
+        echo ""
+        echo -e "${BOLD}=== Workload Pods (All Namespaces) ===${NC}"
+        kubectl get pods -A -l '!k8s-app,app.kubernetes.io/name!=calico,app.kubernetes.io/name!=cilium'
+        ;;
+    tf|terraform)
+        shift
+        TF_ACTION="${1:-plan}"
+        ENV_DIR="${REPO_ROOT}/terraform/environments/scaleway-production"
+        case "$TF_ACTION" in
+            init)
+                (cd "$ENV_DIR" && terraform init)
+                ;;
+            plan)
+                (cd "$ENV_DIR" && terraform plan)
+                ;;
+            apply)
+                (cd "$ENV_DIR" && terraform apply)
+                ;;
+            fmt)
+                terraform fmt -recursive "${REPO_ROOT}/terraform/"
+                ;;
+            *)
+                log_error "Unknown Terraform action '$TF_ACTION'. Use init, plan, apply, or fmt."
+                ;;
+        esac
+        ;;
+    help|--help|-h)
+        usage
+        ;;
+    *)
+        log_error "Unknown command '$CMD'. Run 'tycho k8s --help' for usage."
+        ;;
+esac
